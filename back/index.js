@@ -160,6 +160,45 @@ app.get("/products/:id/recommendation", (req, res) => {
     });
 });
 
+app.post("/signup",(req,res) =>{  
+  const id = req.body.id;
+  const pwd = req.body.pwd;
+  const nickname = req.body.nickname;  
+  models.Account.create(
+    {user_id:id,
+      pwd,
+      nickname
+    }
+  ).then((param)=>console.log(param));  
+  res.send({
+        result: true,
+      });
+});
+
+app.post("/login",(req,res) =>{  
+  const id = req.body.id;
+  const pwd = req.body.pwd;
+  models.Account.findOne(
+    {
+      where: {
+        user_id:id,
+        pwd     
+      } 
+    }
+  ).then(
+    (result) => {
+      if(result !== null){
+        res.send({
+          result: true,
+        });
+      }else{
+        res.send({
+          result: false,
+        });
+      }                     
+    });  
+});
+
 app.listen(port, () => {
   console.log("그랩의 쇼핑몰 서버가 돌아가고 있습니다");
   models.sequelize

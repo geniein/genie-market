@@ -7,15 +7,19 @@ import UploadPage from "../../upload";
 import ProductPage from "../../product";
 import { Button } from "antd";
 import { DownloadOutlined } from "@ant-design/icons";
+import { useState } from "react";
+
 function App() {
   const history = useHistory();
+  console.dir(history);
+  //hooks
   return (
     <div>
       <div id="header">
         <div id="header-area">
           <Link to="/">
             <img src="/images/icons/logo.png" />
-          </Link>
+          </Link>        
           <div>
           <Button
             size="large"
@@ -29,7 +33,10 @@ function App() {
           <Button
             size="large"
             onClick={function () {
-              history.push("/signup");
+              history.push({
+                pathname: '/login',                
+                state: { loginState:false },
+              });              
             }}            
           >
             Signup
