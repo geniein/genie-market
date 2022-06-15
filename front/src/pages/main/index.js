@@ -17,6 +17,12 @@ function MainPage() {
   const [banners, setBanners] = React.useState([]);
   React.useEffect(function () {
     axios
+      .get(`${API_URL}/auth`)
+      .then((res)=>{
+        console.log(res);
+      })
+
+    axios
       .get(`${API_URL}/products`)
       .then(function (result) {
         const products = result.data.products;

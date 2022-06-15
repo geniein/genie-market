@@ -3,6 +3,7 @@ const cors = require("cors");
 const app = express();
 const models = require("./models");
 const multer = require("multer");
+const session = require('express-session');
 const upload = multer({
   storage: multer.diskStorage({
     destination: function (req, file, cb) {
@@ -18,6 +19,12 @@ const port = process.env.PORT || 8080;
 
 app.use(express.json());
 app.use(cors());
+app.use(session({
+  secret: "ingenie",
+  resave: true,
+  saveUninitialized: true,
+  cookie: {maxAge:2400*60*60}
+}))
 app.use("/uploads", express.static("uploads"));
 
 app.get("/banners", (req, res) => {
@@ -49,7 +56,7 @@ app.get("/products", (req, res) => {
     ],
   })
     .then((result) => {
-      console.log("PRODUCTS : ", result);
+      // console.log("PRODUCTS : ", result);
       res.send({
         products: result,
       });
@@ -161,11 +168,11 @@ app.get("/products/:id/recommendation", (req, res) => {
 });
 
 app.post("/signup",(req,res) =>{  
-  const id = req.body.id;
+  const userId = req.body.userId;
   const pwd = req.body.pwd;
   const nickname = req.body.nickname;  
   models.Account.create(
-    {user_id:id,
+    {user_id:userId,
       pwd,
       nickname
     }
@@ -176,21 +183,27 @@ app.post("/signup",(req,res) =>{
 });
 
 app.post("/login",(req,res) =>{  
-  const id = req.body.id;
+  const userId = req.body.userId;
   const pwd = req.body.pwd;
   models.Account.findOne(
     {
       where: {
-        user_id:id,
+        user_id:userId,
         pwd     
       } 
     }
   ).then(
-    (result) => {
-      if(result !== null){
+    (result) => {                  
+      if(result.user_id !== ''){
+        req.session.user = {
+          userId: req.body.userId,
+          authorized: true
+        };
+        req.session.save();
         res.send({
           result: true,
         });
+        console.log(req.session)
       }else{
         res.send({
           result: false,
@@ -199,8 +212,25 @@ app.post("/login",(req,res) =>{
     });  
 });
 
+app.post('/logout', (req,res)=>{
+  if(req.session.user){
+    req.session.destroy((err)=>{
+      if(err) throw err;
+      res.redirect('/login');
+    })
+  }  
+});
+
+app.get('/auth', (req,res)=>{
+  console.log(req.session)
+  console.log(req.session.user);
+  if(req.session.user){
+    res.send(req.session.user.userId);
+  }    
+});
+
 app.listen(port, () => {
-  console.log("그랩의 쇼핑몰 서버가 돌아가고 있습니다");
+  console.log("쇼핑몰 서버가 돌아가고 있습니다");
   models.sequelize
     .sync()
     .then(() => {

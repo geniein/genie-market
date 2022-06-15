@@ -34,13 +34,13 @@ function LoginPage() {
 
 function LoginCard( props ) {
   const history = useHistory();
-  const [id, setId] = useState('');
+  const [userId, setUserId] = useState('');
   const [pwd, setPwd] = useState('');
 
   const login = () =>{
     const url = 'http://localhost:8080/login';
     const data = {
-      id,
+      userId,
       pwd
     }
     axios.post(url,data).then(
@@ -61,7 +61,7 @@ function LoginCard( props ) {
         <div className='login_title'>로그인</div>
         <div className='login_box'>
           <div style={{margin:"auto"}}>                       
-            <input type="text" className='input_box' placeholder='ID' onChange={(e)=>setId(e.target.value)}></input>            
+            <input type="text" className='input_box' placeholder='ID' onChange={(e)=>setUserId(e.target.value)}></input>            
             <input type="password" className='input_box' placeholder='Password' onChange={(e)=>setPwd(e.target.value)}></input>                        
           </div>
         </div>        
@@ -80,7 +80,7 @@ function LoginCard( props ) {
 function SignupCard(props) {
   const history = useHistory();
 
-  const [id, setId] = useState('');
+  const [userId, setUserId] = useState('');
   const [pwd, setPwd] = useState('');
   const [pwdChk, setPwdChk] = useState('');
   const [nickname, setNickname] = useState('');
@@ -89,7 +89,7 @@ function SignupCard(props) {
     //restapi
     const url = 'http://localhost:8080/signup';
     const data = {
-      id,
+      userId,
       pwd,
       pwdChk,
       nickname
@@ -108,7 +108,7 @@ function SignupCard(props) {
         <div className='login_title'>회원가입</div>
         <div style={{margin:"auto"}}>
           <div className='signup_label'>아이디</div>
-          <input type="text" className='signup_input' onChange={(e)=>setId(e.target.value)}></input>
+          <input type="text" className='signup_input' onChange={(e)=>setUserId(e.target.value)}></input>
           <div className='signup_label'>비밀번호</div>
           <input type="password" className='signup_input' onChange={(e)=>setPwd(e.target.value)}></input>
           <div className='signup_label'>비밀번호확인</div>
