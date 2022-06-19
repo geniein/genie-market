@@ -17,7 +17,7 @@ function MainPage() {
   const [banners, setBanners] = React.useState([]);
   React.useEffect(function () {
     axios
-      .get(`${API_URL}/auth`)
+      .get(`${API_URL}/auth/auth`)
       .then((res)=>{
         console.log(res);
       })

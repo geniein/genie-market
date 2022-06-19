@@ -38,7 +38,7 @@ function LoginCard( props ) {
   const [pwd, setPwd] = useState('');
 
   const login = () =>{
-    const url = 'http://localhost:8080/login';
+    const url = 'http://localhost:8080/auth/login';
     const data = {
       userId,
       pwd

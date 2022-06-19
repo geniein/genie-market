@@ -1,9 +1,12 @@
+//Epxress
 const express = require("express");
-const cors = require("cors");
 const app = express();
+//CORS
+const cors = require("cors");
+//DB ORM
 const models = require("./models");
+//FILE
 const multer = require("multer");
-const session = require('express-session');
 const upload = multer({
   storage: multer.diskStorage({
     destination: function (req, file, cb) {
@@ -14,17 +17,40 @@ const upload = multer({
     },
   }),
 });
+//SESSION + Redis
+const session = require('express-session');
+const redis = require('redis');
+const redisStore = require('connect-redis')(session);
+const client = redis.createClient();
+client.on("ready",()=>{
+  console.log('ready');
+})
+client.on("error",(err)=>{
+  console.log('error', err);
+})
+
+app.use(session({
+  secret: "ingenie",
+  store: new redisStore({
+    client: client,
+    logErrors: true
+  }),
+  resave: false,
+  saveUninitialized: true,
+  cookie: {maxAge:2400*60*60}
+}))
+
+//Router
+const auth = require("./routes/auth");
+
 // const detectProduct = require("./helpers/detectProduct");
 const port = process.env.PORT || 8080;
 
 app.use(express.json());
 app.use(cors());
-app.use(session({
-  secret: "ingenie",
-  resave: true,
-  saveUninitialized: true,
-  cookie: {maxAge:2400*60*60}
-}))
+//Auth
+app.use('/auth',auth);
+
 app.use("/uploads", express.static("uploads"));
 
 app.get("/banners", (req, res) => {
@@ -165,68 +191,6 @@ app.get("/products/:id/recommendation", (req, res) => {
       console.error(error);
       res.status(500).send("에러가 발생했습니다.");
     });
-});
-
-app.post("/signup",(req,res) =>{  
-  const userId = req.body.userId;
-  const pwd = req.body.pwd;
-  const nickname = req.body.nickname;  
-  models.Account.create(
-    {user_id:userId,
-      pwd,
-      nickname
-    }
-  ).then((param)=>console.log(param));  
-  res.send({
-        result: true,
-      });
-});
-
-app.post("/login",(req,res) =>{  
-  const userId = req.body.userId;
-  const pwd = req.body.pwd;
-  models.Account.findOne(
-    {
-      where: {
-        user_id:userId,
-        pwd     
-      } 
-    }
-  ).then(
-    (result) => {                  
-      if(result.user_id !== ''){
-        req.session.user = {
-          userId: req.body.userId,
-          authorized: true
-        };
-        req.session.save();
-        res.send({
-          result: true,
-        });
-        console.log(req.session)
-      }else{
-        res.send({
-          result: false,
-        });
-      }                     
-    });  
-});
-
-app.post('/logout', (req,res)=>{
-  if(req.session.user){
-    req.session.destroy((err)=>{
-      if(err) throw err;
-      res.redirect('/login');
-    })
-  }  
-});
-
-app.get('/auth', (req,res)=>{
-  console.log(req.session)
-  console.log(req.session.user);
-  if(req.session.user){
-    res.send(req.session.user.userId);
-  }    
 });
 
 app.listen(port, () => {
