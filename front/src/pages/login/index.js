@@ -43,7 +43,7 @@ function LoginCard( props ) {
       userId,
       pwd
     }
-    axios.post(url,data).then(
+    axios.post(url,data, { withCredentials : true }).then(
       (rtn)=>{
         console.log(rtn.data.result);
         if(rtn.data.result){

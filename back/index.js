@@ -19,27 +19,30 @@ const upload = multer({
 });
 //SESSION + Redis
 const session = require('express-session');
-const redis = require('redis');
-const redisStore = require('connect-redis')(session);
-const client = redis.createClient();
-client.on("ready",()=>{
-  console.log('ready');
-})
-client.on("error",(err)=>{
-  console.log('error', err);
-})
-
+const passport = require('passport');
+const passportConfig = require('./passport'); 
+// const redis = require('redis');
+// const redisStore = require('connect-redis')(session);
+// const client = redis.createClient();
+// client.on("ready",()=>{
+//   console.log('ready');
+// })
+// client.on("error",(err)=>{
+//   console.log('error', err);
+// })
 app.use(session({
   secret: "ingenie",
-  store: new redisStore({
-    client: client,
-    logErrors: true
-  }),
+  // store: new redisStore({
+  //   client: client,
+  //   logErrors: true
+  // }),
   resave: false,
   saveUninitialized: true,
   cookie: {maxAge:2400*60*60}
 }))
-
+app.use(passport.initialize());
+app.use(passport.session()); 
+passportConfig();
 //Router
 const auth = require("./routes/auth");
 
@@ -47,7 +50,10 @@ const auth = require("./routes/auth");
 const port = process.env.PORT || 8080;
 
 app.use(express.json());
-app.use(cors());
+app.use(cors({
+  origin : 'http://localhost:3000',
+  credentials : true
+}));
 //Auth
 app.use('/auth',auth);
 
