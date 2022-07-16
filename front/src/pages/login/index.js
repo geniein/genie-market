@@ -3,7 +3,7 @@ import "./index.css";
 import axios from "axios";
 import dayjs from "dayjs";
 import "dayjs/locale/ko";
-import { useHistory, useLocation } from 'react-router-dom';
+import { Redirect, useHistory, useLocation } from 'react-router-dom';
 import relativeTime from "dayjs/plugin/relativeTime";
 
 dayjs.extend(relativeTime);
@@ -45,9 +45,10 @@ function LoginCard( props ) {
     }
     axios.post(url,data, { withCredentials : true }).then(
       (rtn)=>{
-        console.log(rtn.data.result);
-        if(rtn.data.result){
-          history.push("/");
+        console.log(rtn.data);
+        if(userId===rtn.data){
+          // history.push("/");
+          <Redirect to={{ pathname: "/" }}></Redirect>
         }else{
           alert("없는 아이디 입니다.");
         }
@@ -87,7 +88,7 @@ function SignupCard(props) {
 
   function signup(){
     //restapi
-    const url = 'http://localhost:8080/signup';
+    const url = 'http://localhost:8080/auth/signup';
     const data = {
       userId,
       pwd,

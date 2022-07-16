@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import "./index.css";
 import axios from "axios";
 import { Link } from "react-router-dom";
@@ -15,13 +15,13 @@ dayjs.locale("ko");
 function MainPage() {
   const [products, setProducts] = React.useState([]);
   const [banners, setBanners] = React.useState([]);
-  React.useEffect(function () {
-    axios
-      .get(`${API_URL}/auth/auth`, { withCredentials : true })
-      .then((res)=>{
-        console.log('auth');
-        console.log(res);
-      })
+  useEffect(()=>{
+    // axios
+    //   .get(`${API_URL}/auth/auth`, { withCredentials : true })
+    //   .then((res)=>{
+    //     console.log('auth');
+    //     console.log(res.data);
+    //   })
 
     axios
       .get(`${API_URL}/products`)
@@ -56,7 +56,7 @@ function MainPage() {
       <Carousel autoplay autoplaySpeed={3000}>
         {banners.map((banner, index) => {
           return (
-            <Link to={banner.href}>
+            <Link to={banner.href} key={index}>
               <div id="banner">
                 <img src={`${API_URL}/${banner.imageUrl}`} />
               </div>

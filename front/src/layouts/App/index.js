@@ -7,12 +7,39 @@ import UploadPage from "../../upload";
 import ProductPage from "../../product";
 import { Button } from "antd";
 import { DownloadOutlined } from "@ant-design/icons";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { API_URL } from "../../config/constants";
+import axios from "axios";
 
 function App() {
   const history = useHistory();
-  console.dir(history);
+  const [login, setLogin] = useState(false);
   //hooks
+
+  useEffect(async ()=>{
+    let loginState = await axios
+    .get(`${API_URL}/auth/auth`, { withCredentials : true })
+    // .then((res)=>{      
+    //    if(res.data !== null){
+    //     setLogin(true);
+    //    }
+    // })
+    console.log('state');
+    console.log(loginState);
+    if(loginState !== null){
+      setLogin(true);
+    }
+  },[login]);
+
+  const clickLogout = () =>{
+    console.log('logout');
+    axios
+    .post(`${API_URL}/auth/logout`,{},{ withCredentials : true })
+    .then((res)=>{
+      console.log(res);
+    })
+  }
+
   return (
     <div>
       <div id="header">
@@ -21,30 +48,54 @@ function App() {
             <img src="/images/icons/logo.png" />
           </Link>        
           <div>
-          <Button
-            size="large"
-            onClick={function () {
-              history.push("/login");
-            }}
-            style={{marginRight:'10px'}}            
-          >
-            Login
-          </Button>          
-          <Button
-            size="large"
-            onClick={function () {
-              history.push({
-                pathname: '/login',                
-                state: { loginState:false },
-              });              
-            }}            
-          >
-            Signup
-          </Button>
+          {login && <div>
+            <Button
+              size="large"
+              onClick={clickLogout}
+              style={{marginRight:'10px'}}            
+            >
+              Logout
+            </Button>          
+            <Button
+              size="large"
+              onClick={function () {
+                history.push({
+                  pathname: '/login',                
+                  state: { loginState:false },
+                });              
+              }}            
+            >
+              Mypage
+            </Button>
           </div>
+          }          
+          {!login && <div>
+            <Button
+              size="large"
+              onClick={function () {
+                history.push("/login");
+              }}
+              style={{marginRight:'10px'}}            
+            >
+              Login
+            </Button>          
+            <Button
+              size="large"
+              onClick={function () {
+                history.push({
+                  pathname: '/login',                
+                  state: { loginState:false },
+                });              
+              }}            
+            >
+              Signup
+            </Button>
+          </div>
+          }
         </div>
       </div>
-      <div id="body">
+    </div>
+    <div id="body">
         <Switch>
           <Route exact={true} path="/login">
             <LoginPage />

@@ -68,21 +68,21 @@ router.post("/login", async (req,res, next) =>{
 });  
 
 router.post('/logout', (req,res)=>{
-if(req.session.user){
-    req.session.destroy((err)=>{
-    if(err) throw err;
-    res.redirect('/login');
-    })
-}  
+    console.log('logout');
+    if(req.isAuthenticated()){
+        req.logout((err)=>{
+            if(!err) req.session.save(()=>{
+                //res.redirect('http://localhost:3000/'); //일반적으로 redirect
+                res.json("logout"); //일반적으로 redirect
+            });
+        })        
+    }  
 });
 
 router.get('/auth', (req,res)=>{
-    console.log(req.isAuthenticated());
-// console.log(req.session)
-// console.log(req.session.user);
-// if(req.session.user){
-//     res.send(req.session.user.userId);
-// }    
+    if(req.isAuthenticated()){
+         res.send(req.user);
+     }    
 });
 
 router.post("/signup",(req,res) =>{  

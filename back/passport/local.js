@@ -18,7 +18,7 @@ passport.use(new LocalStrategy({
     }    
     // const result = await bcrypt.compare(pwd, user.pwd);
     if(pwd === user.pwd){
-      return done(null, user);    
+      return done(null, user.user_id);    
     }
     return(null, false, {reason:"Wrong Password"});
   } catch (err){
