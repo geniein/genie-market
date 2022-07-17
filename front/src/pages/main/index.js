@@ -15,14 +15,7 @@ dayjs.locale("ko");
 function MainPage() {
   const [products, setProducts] = React.useState([]);
   const [banners, setBanners] = React.useState([]);
-  useEffect(()=>{
-    // axios
-    //   .get(`${API_URL}/auth/auth`, { withCredentials : true })
-    //   .then((res)=>{
-    //     console.log('auth');
-    //     console.log(res.data);
-    //   })
-
+  useEffect(()=>{    
     axios
       .get(`${API_URL}/products`)
       .then(function (result) {

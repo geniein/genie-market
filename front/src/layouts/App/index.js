@@ -10,33 +10,43 @@ import { DownloadOutlined } from "@ant-design/icons";
 import { useEffect, useState } from "react";
 import { API_URL } from "../../config/constants";
 import axios from "axios";
+import useSWR from "swr";
+import fetcher from "../../utils/fetcher";
 
 function App() {
-  const history = useHistory();
-  const [login, setLogin] = useState(false);
+  const history = useHistory();  
   //hooks
+  const {data: loginState, mutate} = useSWR(`${API_URL}/auth/auth`,fetcher,{
+    dedupingInterval: 2000, // 2초
+  });  
 
-  useEffect(async ()=>{
-    let loginState = await axios
-    .get(`${API_URL}/auth/auth`, { withCredentials : true })
-    // .then((res)=>{      
-    //    if(res.data !== null){
-    //     setLogin(true);
-    //    }
-    // })
-    console.log('state');
+  if(loginState){
     console.log(loginState);
-    if(loginState !== null){
-      setLogin(true);
-    }
-  },[login]);
+    console.log(true);
+    // setLogin(true);
+  }else{
+    console.log(loginState);
+    console.log(false);
+    // setLogin(false);
+  }
+  
+  useEffect(async ()=>{
+    // let loginState = await axios
+    // .get(`${API_URL}/auth/auth`, { withCredentials : true })        
 
-  const clickLogout = () =>{
+    // if(loginState !== null){
+    //   setLogin(true);
+    // }
+  },[]);
+
+  const onClickLogout = (e) =>{
     console.log('logout');
+    e.preventDefault();
     axios
     .post(`${API_URL}/auth/logout`,{},{ withCredentials : true })
-    .then((res)=>{
+    .then((res)=>{      
       console.log(res);
+      mutate()
     })
   }
 
@@ -48,10 +58,10 @@ function App() {
             <img src="/images/icons/logo.png" />
           </Link>        
           <div>
-          {login && <div>
+          {loginState && <div>
             <Button
               size="large"
-              onClick={clickLogout}
+              onClick={onClickLogout}
               style={{marginRight:'10px'}}            
             >
               Logout
@@ -69,7 +79,7 @@ function App() {
             </Button>
           </div>
           }          
-          {!login && <div>
+          {!loginState && <div>
             <Button
               size="large"
               onClick={function () {

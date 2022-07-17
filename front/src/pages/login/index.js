@@ -47,8 +47,10 @@ function LoginCard( props ) {
       (rtn)=>{
         console.log(rtn.data);
         if(userId===rtn.data){
-          // history.push("/");
-          <Redirect to={{ pathname: "/" }}></Redirect>
+          history.push({
+            pathname: "/",
+            state: {login: true}
+          });
         }else{
           alert("없는 아이디 입니다.");
         }
